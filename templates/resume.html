@@ -1,0 +1,49 @@
+{% load experience_tags %}
+{% load static %}
+
+<html>
+    <head>
+        <title>{{ person.full_name }}'s Resume</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/resume.css' %}" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+    </head>
+    <body>
+        <div class="container">
+        <h1>{{ person.full_name }}</h1>
+        <p id="bio_left">
+            {{ person.phone_number }}<br />
+            <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+        </p>
+        <p id="bio_right">
+            {{ person.address.street }}<br />
+            {{ person.address.city }}, {{ person.address.state }} {{ person.address.zipcode }}
+        </p>
+        {% regroup person.experiences.all by type as items %}
+        {% for type in items|sort_by_order %}
+            <h2>{{ type.grouper }}</h2>
+            {% for experience in type.list|sorted:"order" %}
+                <div class="job">
+                    <p class="date">{{ experience.time_period }}</p>
+                    <div class="job_data">
+                        <h3>{{ experience.title }}</h3>
+                        <p class="location">{{ experience.location }}</p>
+                        <p class="description">{{ experience.description|linebreaks }}</p>
+                        {% if experience.items.all %}
+                            <ul>
+                                {% for item in experience.items.all %}
+                                    <li>{{ item.details }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        <h2></h2>
+        <p>References available upon request</p>
+        </div>
+    </body>
+</html>
